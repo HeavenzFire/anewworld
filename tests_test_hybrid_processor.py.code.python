@@ -1,0 +1,67 @@
+import pytest
+import numpy as np
+from src.processors.hybrid_processor import HybridProcessor
+
+@pytest.fixture
+def hybrid_processor():
+    return HybridProcessor(num_qubits=11, classical_layers=[32, 16, 8])
+
+def test_hybrid_initialization(hybrid_processor):
+    """Test hybrid processor initialization"""
+    assert hybrid_processor.num_qubits == 11
+    quantum_stats = hybrid_processor.quantum_processor.get_circuit_stats()
+    assert quantum_stats['num_qubits'] == 11
+
+def test_hybrid_processing(hybrid_processor):
+    """Test hybrid data processing"""
+    input_data = np.random.random(11)
+    result = hybrid_processor.process_hybrid(input_data)
+    assert result.shape == (11,)
+    assert not np.array_equal(result, input_data)
+
+def test_resonance_application(hybrid_processor):
+    """Test resonance application"""
+    input_data = np.random.random(11)
+    frequency = 432.0  # Healing frequency
+    result = hybrid_processor.apply_resonance(input_data, frequency)
+    assert result.shape == (11,)
+    assert not np.array_equal(result, input_data)
+
+def test_hybrid_training(hybrid_processor):
+    """Test hybrid training process"""
+    input_data = np.random.random((10, 11))
+    target_data = np.random.random((10, 11))
+    losses = hybrid_processor.train_hybrid(input_data, target_data, epochs=10)
+    assert len(losses) == 10
+    assert losses[-1] <= losses[0]  # Training should reduce loss
+
+def test_state_saving_loading(hybrid_processor, tmp_path):
+    """Test state saving and loading"""
+    # Process some data to initialize state
+    input_data = np.random.random(11)
+    original_output = hybrid_processor.process_hybrid(input_data)
+    
+    # Save state
+    save_path = tmp_path / "hybrid_state.npy"
+    hybrid_processor.save_state(str(save_path))
+    
+    # Create new processor and load state
+    new_processor = HybridProcessor(num_qubits=11)
+    new_processor.load_state(str(save_path))
+    
+    # Process same data
+    new_output = new_processor.process_hybrid(input_data)
+    
+    # Compare outputs
+    np.testing.assert_array_almost_equal(original_output, new_output)
+
+def test_result_integration(hybrid_processor):
+    """Test quantum and classical result integration"""
+    quantum_result = np.random.random(11)
+    classical_result = np.random.random(11)
+    integrated_result = hybrid_processor.integrate_results(
+        quantum_result, classical_result
+    )
+    assert integrated_result.shape == (11,)
+    assert not np.array_equal(integrated_result, quantum_result)
+    assert not np.array_
