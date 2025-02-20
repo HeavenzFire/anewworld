@@ -153,7 +153,7 @@ This technology carries significant responsibility. Users must understand the pr
 ## 📞 Contact
 
 For inquiries about the Universal Protocol System, please contact:
-[Your contact information]
+[Zachary Dakota Hulse]
 
 ---
 
